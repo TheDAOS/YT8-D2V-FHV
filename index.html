@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>YouTube Downloader (Educational)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        #status {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>YouTube Video Downloader</h1>
+    <input type="text" id="urlInput" placeholder="Enter YouTube video URL">
+    <button onclick="downloadVideo()">Download</button>
+    <p id="status"></p>
+
+    <script>
+        async function downloadVideo() {
+            const url = document.getElementById('urlInput').value;
+            const status = document.getElementById('status');
+            status.textContent = 'Downloading...';
+
+            try {
+                const response = await fetch('http://localhost:5000/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to download video.');
+                }
+
+                const blob = await response.blob();
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'video.mp4';
+                a.click();
+                status.textContent = 'Download complete!';
+            } catch (err) {
+                console.error(err);
+                status.textContent = 'Download failed.';
+            }
+        }
+    </script>
+</body>
+
+</html>
